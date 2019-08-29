@@ -17,12 +17,15 @@
 package org.apache.dubbo.rpc.protocol.thrift;
 
 import org.apache.dubbo.common.extension.SPI;
-
+/**
+ * @since 2.7.0, use https://github.com/dubbo/dubbo-rpc-native-thrift instead
+ */
+@Deprecated
 @SPI(DubboClassNameGenerator.NAME)
 public interface ClassNameGenerator {
 
-    public String generateArgsClassName(String serviceName, String methodName);
+    String generateArgsClassName(String serviceName, String methodName);
 
-    public String generateResultClassName(String serviceName, String methodName);
+    String generateResultClassName(String serviceName, String methodName);
 
 }

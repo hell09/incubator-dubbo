@@ -24,7 +24,6 @@ import org.apache.dubbo.remoting.buffer.ChannelBufferOutputStream;
 import org.apache.dubbo.remoting.exchange.Request;
 import org.apache.dubbo.remoting.exchange.Response;
 import org.apache.dubbo.rpc.Invocation;
-
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMessage;
@@ -35,7 +34,10 @@ import org.apache.thrift.transport.TIOStreamTransport;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * @since 2.7.0, use https://github.com/dubbo/dubbo-rpc-native-thrift instead
+ */
+@Deprecated
 public class ThriftNativeCodec implements Codec2 {
 
     private final AtomicInteger thriftSeq = new AtomicInteger(0);

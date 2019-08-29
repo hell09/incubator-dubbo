@@ -19,7 +19,6 @@ package org.apache.dubbo.rpc.protocol.thrift.ext;
 import org.apache.dubbo.common.logger.Logger;
 import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.rpc.protocol.thrift.ThriftCodec;
-
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -31,6 +30,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * @since 2.7.0, use https://github.com/dubbo/dubbo-rpc-native-thrift to instead of this module
+ */
+@Deprecated
 public class MultiServiceProcessor implements TProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiServiceProcessor.class);

@@ -18,11 +18,30 @@
 package com.alibaba.dubbo.rpc;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 @Deprecated
 public interface Result extends org.apache.dubbo.rpc.Result {
 
-    class CompatibleResult implements Result {
+    @Override
+    default void setValue(Object value) {
+
+    }
+
+    @Override
+    default void setException(Throwable t) {
+
+    }
+
+    abstract class AbstractResult extends org.apache.dubbo.rpc.AbstractResult implements Result {
+
+        @Override
+        public org.apache.dubbo.rpc.Result whenCompleteWithContext(BiConsumer<org.apache.dubbo.rpc.Result, Throwable> fn) {
+            return null;
+        }
+    }
+
+    class CompatibleResult extends AbstractResult {
         private org.apache.dubbo.rpc.Result delegate;
 
         public CompatibleResult(org.apache.dubbo.rpc.Result result) {
@@ -39,8 +58,18 @@ public interface Result extends org.apache.dubbo.rpc.Result {
         }
 
         @Override
+        public void setValue(Object value) {
+            delegate.setValue(value);
+        }
+
+        @Override
         public Throwable getException() {
             return delegate.getException();
+        }
+
+        @Override
+        public void setException(Throwable t) {
+            delegate.setException(t);
         }
 
         @Override
@@ -54,13 +83,18 @@ public interface Result extends org.apache.dubbo.rpc.Result {
         }
 
         @Override
-        public Object getResult() {
-            return delegate.getResult();
+        public Map<String, String> getAttachments() {
+            return delegate.getAttachments();
         }
 
         @Override
-        public Map<String, String> getAttachments() {
-            return delegate.getAttachments();
+        public void addAttachments(Map<String, String> map) {
+            delegate.addAttachments(map);
+        }
+
+        @Override
+        public void setAttachments(Map<String, String> map) {
+            delegate.setAttachments(map);
         }
 
         @Override
@@ -71,6 +105,11 @@ public interface Result extends org.apache.dubbo.rpc.Result {
         @Override
         public String getAttachment(String key, String defaultValue) {
             return delegate.getAttachment(key, defaultValue);
+        }
+
+        @Override
+        public void setAttachment(String key, String value) {
+            delegate.setAttachment(key, value);
         }
     }
 }

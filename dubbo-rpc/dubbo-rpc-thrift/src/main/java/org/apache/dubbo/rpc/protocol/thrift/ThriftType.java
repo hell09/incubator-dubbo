@@ -18,12 +18,15 @@ package org.apache.dubbo.rpc.protocol.thrift;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * @since 2.7.0, use https://github.com/dubbo/dubbo-rpc-native-thrift instead
+ */
+@Deprecated
 public enum ThriftType {
 
     BOOL, BYTE, I16, I32, I64, DOUBLE, STRING;
 
-    private static final Map<Class<?>, ThriftType> types =
+    private static final Map<Class<?>, ThriftType> TYPES =
             new HashMap<Class<?>, ThriftType>();
 
     static {
@@ -36,13 +39,13 @@ public enum ThriftType {
 
     public static ThriftType get(Class<?> key) {
         if (key != null) {
-            return types.get(key);
+            return TYPES.get(key);
         }
         throw new NullPointerException("key == null");
     }
 
     private static void put(Class<?> key, ThriftType value) {
-        types.put(key, value);
+        TYPES.put(key, value);
     }
 
 }

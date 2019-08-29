@@ -25,8 +25,6 @@ package org.apache.dubbo.rpc;
  */
 public interface AsyncContext {
 
-    void addListener(Runnable run);
-
     /**
      * write value and complete the async context.
      *
@@ -35,7 +33,7 @@ public interface AsyncContext {
     void write(Object value);
 
     /**
-     * @return true if the aysnc context is started
+     * @return true if the async context is started
      */
     boolean isAsyncStarted();
 
@@ -45,7 +43,35 @@ public interface AsyncContext {
     boolean stop();
 
     /**
-     * change the context state to stop
+     * change the context state to start
      */
     void start();
+
+    /**
+     * Signal RpcContext switch.
+     * Use this method to switch RpcContext from a Dubbo thread to a new thread created by the user.
+     *
+     * Note that you should use it in a new thread like this:
+     * <code>
+     * public class AsyncServiceImpl implements AsyncService {
+     *     public String sayHello(String name) {
+     *         final AsyncContext asyncContext = RpcContext.startAsync();
+     *         new Thread(() -> {
+     *
+     *             // right place to use this method
+     *             asyncContext.signalContextSwitch();
+     *
+     *             try {
+     *                 Thread.sleep(500);
+     *             } catch (InterruptedException e) {
+     *                 e.printStackTrace();
+     *             }
+     *             asyncContext.write("Hello " + name + ", response from provider.");
+     *         }).start();
+     *         return null;
+     *     }
+     * }
+     * </code>
+     */
+    void signalContextSwitch();
 }

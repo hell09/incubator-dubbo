@@ -16,16 +16,29 @@
  */
 package org.apache.dubbo.rpc;
 
+import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
+
 
 /**
- * RPC invoke result. (API, Prototype, NonThreadSafe)
+ * (API, Prototype, NonThreadSafe)
+ *
+ * An RPC {@link Result}.
+ *
+ * Known implementations are:
+ * 1. {@link AsyncRpcResult}, it's a {@link CompletionStage} whose underlying value signifies the return value of an RPC call.
+ * 2. {@link AppResponse}, it inevitably inherits {@link CompletionStage} and {@link Future}, but you should never treat AppResponse as a type of Future,
+ *    instead, it is a normal concrete type.
  *
  * @serial Don't change the class name and package name.
  * @see org.apache.dubbo.rpc.Invoker#invoke(Invocation)
- * @see org.apache.dubbo.rpc.RpcResult
+ * @see AppResponse
  */
-public interface Result {
+public interface Result extends CompletionStage<Result>, Future<Result>, Serializable {
 
     /**
      * Get invoke result.
@@ -34,12 +47,16 @@ public interface Result {
      */
     Object getValue();
 
+    void setValue(Object value);
+
     /**
      * Get exception.
      *
      * @return exception. if no exception return null.
      */
     Throwable getException();
+
+    void setException(Throwable t);
 
     /**
      * Has exception.
@@ -65,19 +82,25 @@ public interface Result {
     Object recreate() throws Throwable;
 
     /**
-     * @see org.apache.dubbo.rpc.Result#getValue()
-     * @deprecated Replace to getValue()
-     */
-    @Deprecated
-    Object getResult();
-
-
-    /**
      * get attachments.
      *
      * @return attachments.
      */
     Map<String, String> getAttachments();
+
+    /**
+     * Add the specified map to existing attachments in this instance.
+     *
+     * @param map
+     */
+    void addAttachments(Map<String, String> map);
+
+    /**
+     * Replace the existing attachments with the specified param.
+     *
+     * @param map
+     */
+    void setAttachments(Map<String, String> map);
 
     /**
      * get attachment by key.
@@ -93,4 +116,28 @@ public interface Result {
      */
     String getAttachment(String key, String defaultValue);
 
+    void setAttachment(String key, String value);
+
+    /**
+     * Returns the specified {@code valueIfAbsent} when not complete, or
+     * returns the result value or throws an exception when complete.
+     *
+     * @see CompletableFuture#getNow(Object)
+     */
+    Result getNow(Result valueIfAbsent);
+
+    /**
+     * Add a callback which can be triggered when the RPC call finishes.
+     * <p>
+     * Just as the method name implies, this method will guarantee the callback being triggered under the same context as when the call was started,
+     * see implementation in {@link Result#whenCompleteWithContext(BiConsumer)}
+     *
+     * @param fn
+     * @return
+     */
+    Result whenCompleteWithContext(BiConsumer<Result, Throwable> fn);
+
+    default CompletableFuture<Result> completionFuture() {
+        return toCompletableFuture();
+    }
 }
